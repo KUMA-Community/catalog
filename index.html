@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KUMA Community — Обзор репозитория</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Unbounded:wght@300;400;700;900&family=Manrope:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --surface2: #141b25;
+    --surface3: #1c2636;
+    --accent: #00A88E;
+    --accent2: #00d4ff;
+    --accent3: #7cfc00;
+    --accent4: #bd93f9;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: rgba(0, 212, 255, 0.15);
+    --glow: 0 0 30px rgba(0, 212, 255, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+    z-index: 0;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  /* ===== HEADER ===== */
+  header {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    animation: fadeDown 0.7s ease 0.1s both;
+  }
+
+  h1 span.cyan { color: var(--accent); }
+  h1 span.orange { color: var(--accent2); }
+
+  .tagline {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 48px;
+    animation: fadeDown 0.7s ease 0.2s both;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    animation: fadeDown 0.7s ease 0.3s both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+    align-self: center;
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .section { padding: 60px 0; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+
+  .section-line {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, rgba(0,212,255,0.4), transparent);
+  }
+
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  /* ===== CATEGORY TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .tab {
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab:hover, .tab.active {
+    background: rgba(0,212,255,0.1);
+    border-color: rgba(0,212,255,0.4);
+    color: var(--accent);
+  }
+
+  /* ===== CARDS GRID ===== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent, transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: background 0.3s;
+    pointer-events: none;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,212,255,0.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,212,255,0.05);
+  }
+
+  .card:hover::before {
+    background: linear-gradient(135deg, rgba(0,212,255,0.3), transparent);
+  }
+
+  .card-accent-line {
+    position: absolute;
+    top: 0; left: 28px; right: 28px;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .card-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .lang-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid;
+    letter-spacing: 0.05em;
+  }
+
+  .lang-python { color: #3b82f6; border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.08); }
+  .lang-shell { color: #22c55e; border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.08); }
+  .lang-go { color: #06b6d4; border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.08); }
+  .lang-js { color: #f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+  .lang-rust { color: #f97316; border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.08); }
+  .lang-resource { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.08); }
+
+  .card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-name a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .card-name a:hover { color: var(--accent); }
+
+  .card-desc {
+    font-size: 13.5px;
+    color: #94a3b8;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+
+  .card-value {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    font-style: italic;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .stars {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stars span { color: #f59e0b; }
+
+  .hot-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.3);
+    color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ===== CATEGORY COLORS ===== */
+  .cat-content .card-accent-line { background: linear-gradient(90deg, #7cfc00, transparent); }
+  .cat-content .card-icon { background: rgba(124,252,0,0.1); }
+
+  .cat-integration .card-accent-line { background: linear-gradient(90deg, #00d4ff, transparent); }
+  .cat-integration .card-icon { background: rgba(0,212,255,0.1); }
+
+  .cat-automation .card-accent-line { background: linear-gradient(90deg, #ff6b35, transparent); }
+  .cat-automation .card-icon { background: rgba(255,107,53,0.1); }
+
+  .cat-management .card-accent-line { background: linear-gradient(90deg, #bd93f9, transparent); }
+  .cat-management .card-icon { background: rgba(189,147,249,0.1); }
+
+  .cat-enrichment .card-accent-line { background: linear-gradient(90deg, #f59e0b, transparent); }
+  .cat-enrichment .card-icon { background: rgba(245,158,11,0.1); }
+
+  .cat-dev .card-accent-line { background: linear-gradient(90deg, #ec4899, transparent); }
+  .cat-dev .card-icon { background: rgba(236,72,153,0.1); }
+
+  /* ===== HIGHLIGHT CARD ===== */
+  .card-featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #0d1117 0%, #141b25 100%);
+    border-color: rgba(0,212,255,0.2);
+  }
+
+  @media (max-width: 780px) {
+    .card-featured { grid-column: span 1; }
+  }
+
+  .card-featured .card-desc { max-width: 600px; }
+
+  /* ===== DIAGRAM / WORKFLOW ===== */
+  .workflow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+
+  .workflow-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    margin-bottom: 32px;
+    color: var(--accent);
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .flow-node-icon { font-size: 24px; margin-bottom: 8px; }
+  .flow-node-label { font-size: 12px; color: var(--text); font-weight: 500; }
+  .flow-node-sub { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 0;
+    margin-top: 60px;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .footer-brand span { color: var(--accent); }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover { color: var(--accent); }
+
+  .footer-disclaimer {
+    background: rgba(255,107,53,0.06);
+    border: 1px solid rgba(255,107,53,0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  .footer-disclaimer strong { color: var(--accent2); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== INTRO BOX ===== */
+  .intro-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(189,147,249,0.05));
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  @media (max-width: 700px) {
+    .intro-box { grid-template-columns: 1fr; }
+    .stats-row { gap: 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  .intro-text p {
+    color: #94a3b8;
+    line-height: 1.75;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .intro-text p:last-child { margin-bottom: 0; }
+
+  .intro-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .highlight-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
+
+  .highlight-text {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .highlight-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="badge">KUMA SIEM · Community Edition · GitHub 2024–2026</div>
+    <h1>
+      <span class="cyan">KUMA</span><br>
+      Community<br>
+      <span class="orange">Репозиторий</span>
+    </h1>
+    <p class="tagline">Плагины, скрипты и инструменты от сообщества специалистов по ИБ</p>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-num">37+</span>
+        <span class="stat-label">Репозиториев</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="stat-num">6</span>
+        <span class="stat-label">Категорий</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="stat-num">Python</span>
+        <span class="stat-label">Язык №1</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="stat-num">MIT</span>
+        <span class="stat-label">Лицензия</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <div class="intro-box">
+    <div class="intro-text">
+      <p><strong style="color:var(--text)">KUMA Community</strong> — это неофициальный открытый репозиторий, созданный командой пресейл Kaspersky и активными пользователями SIEM-системы KUMA. Цель — централизованно собирать полезные скрипты, интеграции, контент и утилиты, которых нет в официальном продукте.</p>
+      <p>Все материалы предоставляются «как есть», рассчитаны на продвинутых пользователей и не являются официально поддерживаемыми Kaspersky.</p>
+      <p>Telegram-сообщество: <strong style="color:var(--accent)">t.me/kumasiem</strong><br>База знаний: <strong style="color:var(--accent)">kb.kuma-community.ru</strong></p>
+    </div>
+    <div class="intro-highlights">
+      <div class="highlight-item">
+        <div class="highlight-icon">🔌</div>
+        <div class="highlight-text">
+          <strong>Интеграции с экосистемой</strong>
+          OpenCTI, Kaspersky MDR, R-Vision SOAR, KATA, Telegram — готовые коннекторы
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">⚡</div>
+        <div class="highlight-text">
+          <strong>Автоматизация рутины</strong>
+          Скрипты для сбора логов, управления активами, бэкапа данных
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">📦</div>
+        <div class="highlight-text">
+          <strong>Готовый контент</strong>
+          Правила корреляции, нормализаторы, дашборды — устанавливай и используй
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">🛠</div>
+        <div class="highlight-text">
+          <strong>Инструменты для разработчиков</strong>
+          API-библиотека, шифрование пакетов, переводчик контента
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: CONTENT -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 01</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">📦 Контент: правила и нормализаторы</h2>
+    <p class="section-desc" style="margin-bottom:28px">Готовые к импорту пакеты для наполнения KUMA детектирующей логикой</p>
+
+    <div class="cards-grid">
+      <div class="card cat-content card-featured">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📦</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-resource">Пакет ресурсов</span>
+            <span class="hot-badge">⭐ ПОПУЛЯРНОЕ</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_content">kuma_content</a>
+        </div>
+        <div class="card-desc">Самый популярный репозиторий сообщества. Содержит готовые правила корреляции и нормализаторы для KUMA, охватывающие широкий спектр источников событий — от Windows и Linux до сетевого оборудования.</div>
+        <div class="card-value">💡 Экономит сотни часов разработки собственного контента. Просто импортируй пакет — и детектирование работает. Идеально для быстрого старта.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 6 звёзд · 2 форка · MIT</div>
+        </div>
+      </div>
+
+      <div class="card cat-content">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🔔</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-resource">Пакет ресурсов</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_taa_alert">kuma_taa_alert</a>
+        </div>
+        <div class="card-desc">Пакет ресурсов для создания в KUMA алертов от Kaspersky Anti Targeted Attack (KATA/TAA). Реализует кейс получения алертов из KATA прямо в KUMA.</div>
+        <div class="card-value">💡 Связывает два продукта Kaspersky в единый SOC-процесс: выявление продвинутых угроз в KATA автоматически создаёт инциденты в KUMA.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT</div>
+        </div>
+      </div>
+
+      <div class="card cat-content">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-resource">Пакет ресурсов</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_auditd_multiline_wa">kuma_auditd_multiline_wa</a>
+        </div>
+        <div class="card-desc">Пакет ресурсов для корректной обработки многострочных событий auditd в KUMA. Решает типичную проблему: auditd генерирует связанные записи в несколько строк, которые KUMA должна агрегировать в одно событие.</div>
+        <div class="card-value">💡 Без этого воркэраунда часть полей Linux-аудита теряется. С ним — вы получаете полные структурированные события для корреляции.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Агрегация · Нормализация</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: INTEGRATIONS -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 02</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">🔌 Интеграции с внешними системами</h2>
+    <p class="section-desc" style="margin-bottom:28px">Коннекторы, которые расширяют KUMA за пределы её штатных возможностей</p>
+
+    <div class="cards-grid">
+      <div class="card cat-integration">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🌐</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="hot-badge">🆕 НОВОЕ</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/KumaOpenctiLookupProxy">KumaOpenctiLookupProxy</a>
+        </div>
+        <div class="card-desc">Интеграция OpenCTI ↔ KUMA через прокси на REST API. Автоматически проверяет IoC из событий безопасности в платформе киберразведки OpenCTI и обогащает данные прямо в рабочем процессе SOC.</div>
+        <div class="card-value">💡 Аналитик получает контекст угрозы не выходя из KUMA: является ли IP/домен/хеш известным индикатором атаки — ответ в пару секунд.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Обновлено: апрель 2026</div>
+        </div>
+      </div>
+
+      <div class="card cat-integration">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🛡</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/MDR-integrations">MDR-integrations</a>
+        </div>
+        <div class="card-desc">Инструмент для интеграции сторонних систем с Kaspersky Managed Detection and Response (MDR) Console. Позволяет подключить к MDR другие SIEM или корпоративные платформы.</div>
+        <div class="card-value">💡 Полезно для организаций, использующих managed-сервис Kaspersky MDR параллельно с KUMA — позволяет унифицировать поток инцидентов.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> The Unlicense</div>
+        </div>
+      </div>
+
+      <div class="card cat-integration">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🤖</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_soar_integration">kuma_soar_integration</a>
+        </div>
+        <div class="card-desc">Интеграция KUMA SIEM с несколькими инсталляциями R-Vision SOAR одновременно. Поддерживает мультиtenant-сценарии, когда один SIEM обслуживает несколько площадок с разными SOAR.</div>
+        <div class="card-value">💡 Закрывает часто запрашиваемый кейс: алерты из KUMA автоматически порождают инциденты в R-Vision SOAR и запускают плейбуки реагирования.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-integration">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📲</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_telebot">kuma_telebot</a>
+        </div>
+        <div class="card-desc">Telegram-бот для KUMA: уведомляет об алертах и позволяет выполнять базовые действия с SIEM прямо из мессенджера. Поддерживает команды для просмотра и подтверждения алертов.</div>
+        <div class="card-value">💡 Не нужно постоянно держать открытым веб-интерфейс KUMA — важные алерты приходят туда, где аналитик точно их увидит.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 2 · MIT</div>
+        </div>
+      </div>
+
+      <div class="card cat-integration">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📡</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_getLogsAPI_GUI">kuma_getLogsAPI_GUI</a>
+        </div>
+        <div class="card-desc">GUI-приложение для получения логов из различных систем по API и последующей отправки их в KUMA через TCP-сокет. Работает как универсальный адаптер для источников без штатного коллектора.</div>
+        <div class="card-value">💡 Позволяет подключить к KUMA любой продукт с REST API без написания кода — достаточно настроить параметры в интерфейсе.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 1 · 1 форк</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: AUTOMATION -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 03</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">⚡ Автоматизация и управление активами</h2>
+    <p class="section-desc" style="margin-bottom:28px">Скрипты для снижения ручного труда операторов KUMA</p>
+
+    <div class="cards-grid">
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🖥</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-shell">Shell</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_auditd">kuma_auditd</a>
+        </div>
+        <div class="card-desc">Скрипт для автоматической настройки отправки событий с Linux-хостов в KUMA через auditd. Разворачивает нужную конфигурацию аудита одной командой.</div>
+        <div class="card-value">💡 Вместо ручной настройки auditd.rules на каждом сервере — единый скрипт, который можно распространить через Ansible или групповую политику.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Shell</div>
+        </div>
+      </div>
+
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🏠</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_auto_asset_add">kuma_auto_asset_add</a>
+        </div>
+        <div class="card-desc">Скрипт автоматического добавления активов из событий в базу активов KUMA. Анализирует поступающие события и создаёт записи об активах без участия оператора.</div>
+        <div class="card-value">💡 Инвентаризация инфраструктуры «на лету»: KUMA сама заполняет реестр активов по мере того, как с хостов приходят события.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT · 2 форка</div>
+        </div>
+      </div>
+
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🔍</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-shell">Shell</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_vuln_report_auto">kuma_vuln_report_auto</a>
+        </div>
+        <div class="card-desc">Автоматизирует добавление активов с уязвимостями в KUMA. Разбирает отчёты сканера уязвимостей и загружает результаты в контекст активов SIEM.</div>
+        <div class="card-value">💡 Связывает результаты Vulnerability Management с SIEM: аналитик видит алерт + понимает, уязвим ли затронутый хост к известным CVE.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Shell · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🗄</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/KUMA-sqlite-to-table">KUMA-sqlite-to-table</a>
+        </div>
+        <div class="card-desc">Экспортирует учётные записи из локальной SQLite-базы и автоматически загружает CSV-файл в словарь KUMA через REST API. Полезно для синхронизации справочников пользователей.</div>
+        <div class="card-value">💡 Позволяет подтягивать данные из любой локальной БД в контекстные таблицы KUMA для обогащения событий.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Python · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📤</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/redcheck-tool">redcheck-tool</a>
+        </div>
+        <div class="card-desc">Скрипт для импорта активов из отчётов российского сканера уязвимостей RedCheck в KUMA. Разбирает XML-отчёт и создаёт/обновляет активы через API.</div>
+        <div class="card-value">💡 Интеграция с популярным отечественным сканером, которой нет в коробке — теперь данные RedCheck видны в контексте SIEM-расследований.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-automation">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🗂</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma-assets-archiver">kuma-assets-archiver</a>
+        </div>
+        <div class="card-desc">Скрипт для архивации активов KUMA. Выгружает данные об активах и сохраняет их в архивный формат для долгосрочного хранения или переноса между инсталляциями.</div>
+        <div class="card-value">💡 Решает задачу резервного копирования реестра активов — стандартными средствами KUMA это трудозатратно.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Python</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: DATA MANAGEMENT -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 04</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">💾 Управление данными и бэкап</h2>
+    <p class="section-desc" style="margin-bottom:28px">Инструменты для работы с хранилищем событий KUMA (ClickHouse) и конфигурацией</p>
+
+    <div class="cards-grid">
+      <div class="card cat-management">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">💽</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-shell">Shell</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_save_partition">kuma_save_partition</a>
+        </div>
+        <div class="card-desc">Скрипт сохранения партиций из локального хранилища KUMA на основе ClickHouse. Позволяет переносить или архивировать исторические данные событий по временным партициям.</div>
+        <div class="card-value">💡 Критически важно при нехватке дискового пространства или при переносе KUMA: можно выгрузить «старые» партиции с данными и восстановить при необходимости.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Shell · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-management">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-shell">Shell</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_dash_preset">kuma_dash_preset</a>
+        </div>
+        <div class="card-desc">Скрипт импорта и экспорта дашбордов, пресетов поиска и сохранённых запросов для KUMA. Позволяет переносить визуальную конфигурацию между инсталляциями одной командой.</div>
+        <div class="card-value">💡 Незаменим при обновлении или миграции KUMA: все дашборды и сохранённые запросы аналитиков можно перенести за минуты.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Shell · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-management">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🔐</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_packages_encryption">kuma_packages_encryption</a>
+        </div>
+        <div class="card-desc">Инструмент для шифрования и дешифрования пакетов ресурсов KUMA. Позволяет работать с зашифрованными .kuma-пакетами: инспектировать содержимое, модифицировать и запаковывать обратно.</div>
+        <div class="card-value">💡 Открывает возможности для кастомизации пакетов и глубокого понимания структуры контента KUMA — важно для разработчиков правил.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 1 · 2 форка</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: ENRICHMENT -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 05</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">🌍 Обогащение данных и геолокация</h2>
+    <p class="section-desc" style="margin-bottom:28px">Утилиты для добавления контекста к событиям KUMA</p>
+
+    <div class="cards-grid">
+      <div class="card cat-enrichment card-featured">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🗺</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-go">Go</span>
+            <span class="hot-badge">🔥 15 форков</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/mmdb2kuma">mmdb2kuma</a>
+        </div>
+        <div class="card-desc">Конвертер базы данных MaxMind GeoIP (формат .mmdb) в CSV-формат, пригодный для загрузки в KUMA в качестве источника геолокации. Поддерживает базы City и Country, вывод на русском и английском языках.</div>
+        <div class="card-value">💡 KUMA требует специфический формат GeoIP-таблиц. Этот инструмент — единственный простой способ использовать бесплатные базы MaxMind GeoLite2 в KUMA. Самый востребованный инструмент сообщества (15 форков).</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> Go · Apache 2.0 · 15 форков</div>
+        </div>
+      </div>
+
+      <div class="card cat-enrichment">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🔎</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/tracer">tracer</a>
+        </div>
+        <div class="card-desc">Утилита обогащения данными для KUMA, работающая по принципу аналогичному Kaspersky CyberTrace. Позволяет проверять IoC (IP, домены, хеши) по внешним фидам без покупки CyberTrace.</div>
+        <div class="card-value">💡 Open-source альтернатива CyberTrace для проверки индикаторов компрометации — особенно актуально для организаций с ограниченным бюджетом.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT · 1 форк</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: DEVTOOLS -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-label">// 06</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-title">🛠 Инструменты разработчика</h2>
+    <p class="section-desc" style="margin-bottom:28px">Для тех, кто создаёт собственный контент и автоматизирует работу с KUMA API</p>
+
+    <div class="cards-grid">
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📚</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kapi">kapi</a>
+        </div>
+        <div class="card-desc">Python-библиотека для работы с KUMA REST API. Предоставляет удобные классы и методы для автоматизации операций с KUMA из собственного кода или скриптов.</div>
+        <div class="card-value">💡 Основа для разработки любых собственных интеграций и скриптов — избавляет от написания бойлерплейт-кода для HTTP-запросов к KUMA.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 1 · MIT · 3 форка</div>
+        </div>
+      </div>
+
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🖱</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_pomogator">kuma_pomogator</a>
+        </div>
+        <div class="card-desc">Python-сервис с веб-интерфейсом для выполнения операций с KUMA через REST API без написания кода. Своего рода GUI-обёртка над API KUMA для типовых задач администрирования.</div>
+        <div class="card-value">💡 Для операторов, которым нужна автоматизация, но не хочется писать скрипты: открываешь браузер, жмёшь кнопки — операции выполняются через API.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 3 · MIT · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">📐</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/mapping_extractor">mapping_extractor</a>
+        </div>
+        <div class="card-desc">Извлекает маппинги полей из нормализаторов KUMA и записывает их в файл Excel (.xlsx). Позволяет увидеть, какие поля из какого источника во что нормализуются в KUMA.</div>
+        <div class="card-value">💡 Незаменим при документировании нормализаторов или при отладке правил корреляции: сразу видно, как называется нужное поле в схеме KUMA.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> 2 · MIT · 2 форка</div>
+        </div>
+      </div>
+
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🌍</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma_resource_translator">kuma_resource_translator</a>
+        </div>
+        <div class="card-desc">Автоматически переводит кириллические строки в JSON-файлах ресурсов KUMA на английский язык. Полезно для подготовки контента к публикации или использованию в международных командах.</div>
+        <div class="card-value">💡 Создан комьюнити на русском языке — но международные команды теперь могут пользоваться переведёнными версиями правил и нормализаторов.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT · 1 форк</div>
+        </div>
+      </div>
+
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🐍</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-python">Python</span>
+            <span class="lang-badge lang-resource">MIT</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/community_pack_mapping">community_pack_mapping</a>
+        </div>
+        <div class="card-desc">Скрипт для миграции правил сообщества на новый формат маппинга, добавленный в KUMA версии 3.2. Помогает обновить существующий контент комьюнити без ручного редактирования.</div>
+        <div class="card-value">💡 При обновлении KUMA до 3.2+ скрипт автоматически конвертирует старый контент — не нужно переписывать сотни правил вручную.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> MIT</div>
+        </div>
+      </div>
+
+      <div class="card cat-dev">
+        <div class="card-accent-line"></div>
+        <div class="card-header">
+          <div class="card-icon">🔌</div>
+          <div class="card-badges">
+            <span class="lang-badge lang-js">JavaScript</span>
+          </div>
+        </div>
+        <div class="card-name">
+          <a href="https://github.com/KUMA-Community/kuma-improver">kuma-improver</a>
+        </div>
+        <div class="card-desc">Chrome-расширение, которое находит на странице KUMA сырое событие и позволяет отправить пожелание на доработку нормализатора на указанный email прямо из интерфейса SIEM.</div>
+        <div class="card-value">💡 Упрощает процесс обратной связи по качеству нормализации: аналитик видит «плохое» событие — одним кликом отправляет баг-репорт разработчику нормализатора.</div>
+        <div class="card-footer">
+          <div class="stars"><span>★</span> JavaScript · 1 форк</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW DIAGRAM -->
+  <section class="section">
+    <div class="workflow">
+      <div class="workflow-title">🔄 Как инструменты комьюнити вписываются в SOC-процессы</div>
+      <div class="flow-row">
+        <div class="flow-node">
+          <div class="flow-node-icon">🖥</div>
+          <div class="flow-node-label">Источники событий</div>
+          <div class="flow-node-sub">Linux, Windows, сеть</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">⚙️</div>
+          <div class="flow-node-label">Сбор и нормализация</div>
+          <div class="flow-node-sub">kuma_auditd · kuma_content</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">🔍</div>
+          <div class="flow-node-label">Обогащение</div>
+          <div class="flow-node-sub">mmdb2kuma · tracer · OpenCTI</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">🚨</div>
+          <div class="flow-node-label">Корреляция и алерты</div>
+          <div class="flow-node-sub">KUMA Core · kuma_taa_alert</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-icon">📲</div>
+          <div class="flow-node-label">Нотификации и SOAR</div>
+          <div class="flow-node-sub">telebot · soar_integration</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-disclaimer">
+      <strong>⚠️ Важно:</strong> Все материалы разработаны членами сообщества KUMA и рассчитаны на продвинутых пользователей. Они не являются официально поддерживаемыми Kaspersky, предоставляются «как есть», без каких-либо гарантий. Авторы не несут ответственности за ущерб, возникший в результате использования данных материалов. © С любовью, команда пресейл ЛК и сообщество KUMA.
+    </div>
+    <div class="footer-inner">
+      <div class="footer-brand"><span>KUMA</span> Community</div>
+      <div class="footer-links">
+        <a href="https://github.com/KUMA-Community" class="footer-link">⬡ GitHub</a>
+        <a href="https://t.me/kumasiem" class="footer-link">✈ Telegram</a>
+        <a href="https://kb.kuma-community.ru" class="footer-link">📖 База знаний</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
