@@ -13,7 +13,7 @@
     --surface2: #141b25;
     --surface3: #1c2636;
     --accent: #00A88E;
-    --accent2: #00d4ff;
+    --accent2: #ff6b35;
     --accent3: #7cfc00;
     --accent4: #bd93f9;
     --text: #e2e8f0;
@@ -315,12 +315,30 @@
   }
 
   .card-name a {
-    color: inherit;
+    color: var(--accent);
     text-decoration: none;
-    transition: color 0.2s;
+    border-bottom: 1px dashed rgba(0, 168, 142, 0.5);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
   }
 
-  .card-name a:hover { color: var(--accent); }
+  .card-name a::after {
+    content: ' ↗';
+    font-size: 11px;
+    opacity: 0.55;
+    display: inline-block;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .card-name a:hover {
+    color: #00d4b8;
+    border-bottom: 1px solid #00d4b8;
+  }
+
+  .card-name a:hover::after {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
 
   .card-desc {
     font-size: 13.5px;
